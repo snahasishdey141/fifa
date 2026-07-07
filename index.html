@@ -4,13 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>EA SPORTS FC 26 Live</title>
+<title>Football Live</title>
 
-<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.13.5/controls.min.css"/>
 
 <style>
-
 *{
 margin:0;
 padding:0;
@@ -18,293 +16,165 @@ box-sizing:border-box;
 }
 
 body{
-
-font-family:Orbitron,sans-serif;
-
-background:
-radial-gradient(circle at top,#1aff00 0%,#0b0b0b 35%,#000 100%);
-
-color:white;
-
-min-height:100vh;
-
-display:flex;
-
-justify-content:center;
-
-align-items:center;
-
-overflow:hidden;
-
+background:#050505;
+font-family:Arial,Helvetica,sans-serif;
+color:#fff;
+overflow-x:hidden;
 }
 
 body::before{
-
 content:"";
-
-position:absolute;
-
-width:700px;
-
-height:700px;
-
-background:#00ff55;
-
+position:fixed;
+left:-200px;
+top:-200px;
+width:600px;
+height:600px;
+background:#00ff66;
 filter:blur(180px);
-
-opacity:.18;
-
-animation:move 10s infinite alternate;
-
+opacity:.15;
+z-index:-1;
 }
 
-@keyframes move{
-
-from{
-
-transform:translate(-250px,-150px);
-
-}
-
-to{
-
-transform:translate(250px,150px);
-
-}
-
-}
-
-.container{
-
-position:relative;
-
-z-index:2;
-
-width:95%;
-
-max-width:1150px;
-
+body::after{
+content:"";
+position:fixed;
+right:-200px;
+bottom:-200px;
+width:600px;
+height:600px;
+background:#00ff99;
+filter:blur(180px);
+opacity:.15;
+z-index:-1;
 }
 
 .header{
-
+padding:20px;
 display:flex;
-
 justify-content:space-between;
-
 align-items:center;
-
-margin-bottom:25px;
-
+background:#111;
+border-bottom:2px solid #00ff66;
 }
 
 .logo{
-
-font-size:34px;
-
-font-weight:900;
-
-letter-spacing:3px;
-
-color:#9dff00;
-
-}
-
-.logo span{
-
-color:white;
-
+font-size:30px;
+font-weight:bold;
+color:#00ff66;
 }
 
 .live{
-
-padding:10px 18px;
-
-background:#ff0033;
-
+background:red;
+padding:8px 18px;
 border-radius:50px;
-
-font-size:13px;
-
+font-size:14px;
 font-weight:bold;
-
 animation:pulse 1s infinite;
-
 }
 
 @keyframes pulse{
-
-50%{
-
-transform:scale(1.08);
-
+50%{transform:scale(1.1);}
 }
 
+.container{
+width:95%;
+max-width:1200px;
+margin:30px auto;
 }
 
-.player-box{
-
-background:rgba(18,18,18,.92);
-
-padding:20px;
-
-border-radius:18px;
-
-border:2px solid #35ff5c;
-
-box-shadow:0 0 35px rgba(0,255,80,.25);
-
-backdrop-filter:blur(15px);
-
+.video-container{
+border:2px solid #00ff66;
+border-radius:15px;
+overflow:hidden;
+box-shadow:0 0 30px rgba(0,255,100,.3);
 }
 
 video{
-
 width:100%;
-
-border-radius:12px;
-
+height:auto;
+background:black;
 }
 
 .footer{
-
 text-align:center;
-
-margin-top:20px;
-
+padding:25px;
+color:#888;
 font-size:14px;
-
-color:#bfbfbf;
-
 }
-
-.footer strong{
-
-color:#9dff00;
-
-}
-
 </style>
 
 </head>
 
 <body>
 
+<div class="header">
+<div class="logo">⚽ FOOTBALL LIVE</div>
+<div class="live">🔴 LIVE</div>
+</div>
+
 <div class="container">
 
-<div class="header">
+<div class="video-container">
 
-<div class="logo">
-EA SPORTS <span>FC 26</span>
+<div data-shaka-player-container
+     data-shaka-player-cast-receiver-id=""
+     style="width:100%;">
+
+<video
+id="video"
+data-shaka-player
+autoplay
+controls
+playsinline>
+</video>
+
 </div>
 
-<div class="live">
-🔴 LIVE MATCH
 </div>
-
-</div>
-
-<div class="player-box">
-
-<video id="player" controls playsinline></video>
 
 </div>
 
 <div class="footer">
-
-Powered by <strong>FC 26 Live Streaming</strong>
-
+HD Streaming • Adaptive Bitrate • Fullscreen • Quality Selector
 </div>
 
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.13.5/shaka-player.compiled.js"></script>
 
 <script>
 
-const videoSrc="https://qp-pldt-live-bpk-ucd-prod.akamaized.net/bpk-tv/fifa_ppv1/default/index.mpd";
+async function init(){
 
-const video=document.getElementById("player");
+if(!shaka.Player.isBrowserSupported()){
 
-if(Hls.isSupported()){
+alert("Browser not supported");
 
-const hls=new Hls();
-
-hls.loadSource(videoSrc);
-
-hls.attachMedia(video);
-
-hls.on(Hls.Events.MANIFEST_PARSED,function(){
-
-const qualities=hls.levels.map(level=>level.height);
-
-qualities.unshift(0);
-
-new Plyr(video,{
-
-quality:{
-
-default:0,
-
-options:qualities,
-
-forced:true,
-
-onChange:updateQuality
-
-},
-
-controls:[
-'play-large',
-'restart',
-'rewind',
-'play',
-'fast-forward',
-'progress',
-'current-time',
-'duration',
-'mute',
-'volume',
-'settings',
-'fullscreen'
-]
-
-});
-
-function updateQuality(newQuality){
-
-if(newQuality===0){
-
-hls.currentLevel=-1;
-
-}else{
-
-hls.levels.forEach((level,index)=>{
-
-if(level.height===newQuality){
-
-hls.currentLevel=index;
+return;
 
 }
 
-});
+const video=document.getElementById("video");
+
+const player=new shaka.Player(video);
+
+window.player=player;
+
+try{
+
+await player.load("https://qp-pldt-live-bpk-ucd-prod.akamaized.net/bpk-tv/fifa_ppv1/default/index.mpd");
+
+console.log("Video Loaded");
+
+}catch(error){
+
+console.error(error);
+
+alert("Unable to load stream");
 
 }
 
 }
 
-});
-
-}
-
-else if(video.canPlayType('application/vnd.apple.mpegurl')){
-
-video.src=videoSrc;
-
-new Plyr(video);
-
-}
+document.addEventListener("DOMContentLoaded",init);
 
 </script>
 
