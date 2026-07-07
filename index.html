@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>EA SPORTS FC 26 Live</title>
+
+<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+
+font-family:Orbitron,sans-serif;
+
+background:
+radial-gradient(circle at top,#1aff00 0%,#0b0b0b 35%,#000 100%);
+
+color:white;
+
+min-height:100vh;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+overflow:hidden;
+
+}
+
+body::before{
+
+content:"";
+
+position:absolute;
+
+width:700px;
+
+height:700px;
+
+background:#00ff55;
+
+filter:blur(180px);
+
+opacity:.18;
+
+animation:move 10s infinite alternate;
+
+}
+
+@keyframes move{
+
+from{
+
+transform:translate(-250px,-150px);
+
+}
+
+to{
+
+transform:translate(250px,150px);
+
+}
+
+}
+
+.container{
+
+position:relative;
+
+z-index:2;
+
+width:95%;
+
+max-width:1150px;
+
+}
+
+.header{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:25px;
+
+}
+
+.logo{
+
+font-size:34px;
+
+font-weight:900;
+
+letter-spacing:3px;
+
+color:#9dff00;
+
+}
+
+.logo span{
+
+color:white;
+
+}
+
+.live{
+
+padding:10px 18px;
+
+background:#ff0033;
+
+border-radius:50px;
+
+font-size:13px;
+
+font-weight:bold;
+
+animation:pulse 1s infinite;
+
+}
+
+@keyframes pulse{
+
+50%{
+
+transform:scale(1.08);
+
+}
+
+}
+
+.player-box{
+
+background:rgba(18,18,18,.92);
+
+padding:20px;
+
+border-radius:18px;
+
+border:2px solid #35ff5c;
+
+box-shadow:0 0 35px rgba(0,255,80,.25);
+
+backdrop-filter:blur(15px);
+
+}
+
+video{
+
+width:100%;
+
+border-radius:12px;
+
+}
+
+.footer{
+
+text-align:center;
+
+margin-top:20px;
+
+font-size:14px;
+
+color:#bfbfbf;
+
+}
+
+.footer strong{
+
+color:#9dff00;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<div class="logo">
+EA SPORTS <span>FC 26</span>
+</div>
+
+<div class="live">
+🔴 LIVE MATCH
+</div>
+
+</div>
+
+<div class="player-box">
+
+<video id="player" controls playsinline></video>
+
+</div>
+
+<div class="footer">
+
+Powered by <strong>FC 26 Live Streaming</strong>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+
+<script>
+
+const videoSrc="https://xredsox.s3.eu-central-1.amazonaws.com/msg.m3u8";
+
+const video=document.getElementById("player");
+
+if(Hls.isSupported()){
+
+const hls=new Hls();
+
+hls.loadSource(videoSrc);
+
+hls.attachMedia(video);
+
+hls.on(Hls.Events.MANIFEST_PARSED,function(){
+
+const qualities=hls.levels.map(level=>level.height);
+
+qualities.unshift(0);
+
+new Plyr(video,{
+
+quality:{
+
+default:0,
+
+options:qualities,
+
+forced:true,
+
+onChange:updateQuality
+
+},
+
+controls:[
+'play-large',
+'restart',
+'rewind',
+'play',
+'fast-forward',
+'progress',
+'current-time',
+'duration',
+'mute',
+'volume',
+'settings',
+'fullscreen'
+]
+
+});
+
+function updateQuality(newQuality){
+
+if(newQuality===0){
+
+hls.currentLevel=-1;
+
+}else{
+
+hls.levels.forEach((level,index)=>{
+
+if(level.height===newQuality){
+
+hls.currentLevel=index;
+
+}
+
+});
+
+}
+
+}
+
+});
+
+}
+
+else if(video.canPlayType('application/vnd.apple.mpegurl')){
+
+video.src=videoSrc;
+
+new Plyr(video);
+
+}
+
+</script>
+
+</body>
+</html>
